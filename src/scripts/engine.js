@@ -6,44 +6,58 @@ const state = {
     score: document.querySelector("#score"),
   },
   values: {
-    timerId: null,
     gameVelocity: 1000,
     hitPosition: 0,
     result: 0,
+    currentTime: 60,
+  },
+  actions: {
+    timerId: setInterval(randomSquare, 1000),
+    countDownTimerId: setInterval(countDown, 1000),
   },
 };
 
-function randomSquare() {
-    state.view.squares.forEach((square) => {
-        square.classList.remove("enemy");
-    });
+function countDown() {
+  state.values.currentTime--;
+  state.view.timeLeft.textContent = state.values.currentTime;
 
-    let randomNumber = Math.floor(Math.random() * 9);
-    let randomSquare = state.view.squares[randomNumber];
-    randomSquare.classList.add("enemy");
-    state.values.hitPosition = randomSquare.id;
+  if (state.values.currentTime <= 0) {
+    clearInterval(state.actions.timerId);
+    clearInterval(state.actions.countDownTimerId);
+    alert("GAME OVER! Your final score is " + state.values.result);
+  }
+}
+
+function randomSquare() {
+  state.view.squares.forEach((square) => {
+    square.classList.remove("enemy");
+  });
+
+  let randomNumber = Math.floor(Math.random() * 9);
+  let randomSquare = state.view.squares[randomNumber];
+  randomSquare.classList.add("enemy");
+  state.values.hitPosition = randomSquare.id;
 }
 
 function moveEnemy() {
-    state.values.timerId = setInterval(randomSquare, state.values.gameVelocity);
+  state.values.timerId = setInterval(randomSquare, state.values.gameVelocity);
 }
 
-function addListenerHitbox(){
-    state.view.squares.forEach((square) => {
-        square.addEventListener("mousedown", () => {
-            if (square.id == state.values.hitPosition) {
-                state.values.result++;
-                state.view.score.textContent = state.values.result;
-                state.values.hitPosition = null;
-            }
-        });
+function addListenerHitbox() {
+  state.view.squares.forEach((square) => {
+    square.addEventListener("mousedown", () => {
+      if (square.id == state.values.hitPosition) {
+        state.values.result++;
+        state.view.score.textContent = state.values.result;
+        state.values.hitPosition = null;
+      }
     });
+  });
 }
 
 function initialize() {
-    moveEnemy();
-    addListenerHitbox();
+  moveEnemy();
+  addListenerHitbox();
 }
 
 initialize();
-
